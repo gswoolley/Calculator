@@ -1,151 +1,112 @@
-const display = document.getElementById("screen");
-const one = document.getElementById("1");
-const two = document.getElementById("2");
-const three = document.getElementById("3");
-const four = document.getElementById("4");
-const five = document.getElementById("5");
-const six = document.getElementById("6");
-const seven = document.getElementById("7");
-const eight = document.getElementById("8");
-const nine = document.getElementById("9");
-const addBtn = document.getElementById("+");
-const subtractBtn = document.getElementById("-");
-const multiplyBtn = document.getElementById("*");
-const divideBtn = document.getElementById("/");
-const equalsBtn = document.getElementById("=");
-const clearBtn = document.getElementById("clear");
-let displayValue = "";
-let oldDisplay = "";
+let currentNum = "";
+let previousNum = "";
 let operator = "";
+const numberButtons = document.querySelectorAll(".number");
+const operatorButtons = document.querySelectorAll(".operator");
+const clearButton = document.querySelector(".clear");
+clearButton.addEventListener("click", clearCalculator);
+const equalsButton = document.querySelector(".equal");
+const decicmalButton = document.querySelector(".decimal");
 
-//The basic math functions
-function add(a, b) {
-  return a + b;
-}
+equalsButton.addEventListener("click", () => {
+  if (currentNum != "" && previousNum != "") {
+    calculate();
+  }
+});
 
-function subtract(a, b) {
-  return a - b;
-}
+decicmalButton.addEventListener("click", addDecimal);
 
-function multiply(a, b) {
-  return a * b;
-}
+const previousNumberDisplay = document.querySelector(".previousNumber");
+const currentNumberDisplay = document.querySelector(".currentNumber");
 
-function divide(a, b) {
-  return a / b;
-}
-//currently operator is string, may be a potential fault. not sure
-function operate(operator, a, b) {
-  if (operator == "+") {
-    console.log(`${a} + ${b}`);
-    return add(a, b);
-  } else if (operator == "-") {
-    console.log(`${a} - ${b}`);
-    return subtract(a, b);
-  } else if (operator == "*") {
-    console.log(`${a} * ${b}`);
-    return multiply(a, b);
-  } else if (operator == "/") {
-    console.log(`${a} / ${b}`);
-    return divide(a, b);
+numberButtons.forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    handleNumber(e.target.textContent);
+  });
+});
+
+function handleNumber(number) {
+  if (previousNum !== "" && currentNum !== "" && operator === "") {
+    previousNum = "";
+    currentNumberDisplay.textContent = currentNum;
+  }
+  if (currentNum.length < 12) {
+    currentNum += number;
+    currentNumberDisplay.textContent = currentNum;
   }
 }
 
-//DOM methods:
+operatorButtons.forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    handleOperator(e.target.textContent);
+  });
+});
 
-one.onclick = () => {
-  display.value += "1";
-  displayValue += "1";
-  console.log(displayValue);
-};
+function handleOperator(op) {
+  if (previousNum === "") {
+    previousNum = currentNum;
+    operatorCheck(op);
+  } else if (currentNum === "") {
+    operatorCheck(op);
+  } else {
+    calculate();
+    operator = op;
+    currentNumberDisplay.textContent = "0";
+    previousNumberDisplay.textContent = previousNum + " " + operator;
+  }
+}
 
-two.onclick = () => {
-  display.value += "2";
-  displayValue += "2";
-  console.log(displayValue);
-};
+function operatorCheck(text) {
+  operator = text;
+  previousNumberDisplay.textContent = previousNum + " " + operator;
+  currentNumberDisplay.textContent = "0";
+  currentNum = "";
+}
 
-three.onclick = () => {
-  display.value += "3";
-  displayValue += "3";
-  console.log(displayValue);
-};
+function calculate() {
+  previousNum = Number(previousNum);
+  currentNum = Number(currentNum);
 
-four.onclick = () => {
-  display.value += "4";
-  displayValue += "4";
-  console.log(displayValue);
-};
+  if (operator === "+") {
+    previousNum = previousNum + currentNum;
+  } else if (operator === "-") {
+    previousNum = previousNum - currentNum;
+  } else if (operator == "*") {
+    previousNum = previousNum * currentNum;
+  } else if ((operator = "/")) {
+    if (currentNum <= 0) {
+      previousNum = "Error";
+      displayResults();
+      return;
+    }
+    previousNum = previousNum / currentNum;
+  }
+  previousNum = previousNum.toString();
+  displayResults();
+}
 
-five.onclick = () => {
-  display.value += "5";
-  displayValue += "5";
-  console.log(displayValue);
-};
+function displayResults() {
+  if (previousNum.length <= 11) {
+    currentNumberDisplay.textContent = previousNum;
+  } else {
+    currentNumberDisplay.textContent = previousNum.slice(0, 11) + "...";
+  }
+  previousNumberDisplay.textContent = "";
+  operator = "";
+  currentNum = "";
+}
 
-six.onclick = () => {
-  display.value += "6";
-  displayValue += "6";
-  console.log(displayValue);
-};
+function clearCalculator() {
+  currentNum = "";
+  previousNum = "";
+  previousNumberDisplay.textContent = "";
+  currentNumberDisplay.textContent = "";
+  operator = "";
+}
 
-seven.onclick = () => {
-  display.value += "7";
-  displayValue += "7";
-  console.log(displayValue);
-};
-
-eight.onclick = () => {
-  display.value += "8";
-  displayValue += "8";
-  console.log(displayValue);
-};
-
-nine.onclick = () => {
-  display.value += "9";
-  displayValue += "9";
-  console.log(displayValue);
-};
-
-clearBtn.onclick = () => {
-  displayValue = "";
-  display.value = "";
-  oldDisplay = "";
-};
-
-addBtn.onclick = () => {
-  operator = "+";
-  console.log(operator);
-  oldDisplay = displayValue;
-  displayValue = "";
-  display.value = "";
-};
-
-subtractBtn.onclick = () => {
-  operator = "-";
-  console.log(operator);
-  oldDisplay = displayValue;
-  displayValue = "";
-  display.value = "";
-};
-multiplyBtn.onclick = () => {
-  operator = "*";
-  console.log(operator);
-  oldDisplay = displayValue;
-  displayValue = "";
-  display.value = "";
-};
-divideBtn.onclick = () => {
-  operator = "/";
-  console.log(operator);
-  oldDisplay = displayValue;
-  displayValue = "";
-  display.value = "";
-};
-
-equalsBtn.onclick = () => {
-  console.log(oldDisplay, displayValue, operator);
-  console.log(operate(operator, +oldDisplay, +displayValue));
-  display.value = operate(operator, +oldDisplay, +displayValue);
-  displayValue = operate(operator, +oldDisplay, +displayValue);
-};
+function addDecimal() {
+  if (!currentNum.includes(".")) {
+    currentNum += ".";
+    currentNumberDisplay.textContent = currentNum;
+  }
+}
